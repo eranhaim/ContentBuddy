@@ -225,7 +225,10 @@ function App() {
   }, [toast])
 
   const reviewAssets = state.assets.filter((asset) => asset.status === 'in_review')
-  const readyAssets = state.assets.filter((asset) => asset.type === 'variant' && asset.status === 'approved')
+  const reservedAssetIds = new Set(state.slots
+    .filter((slot) => slot.status !== 'skipped' && slot.status !== 'failed')
+    .map((slot) => slot.assetId))
+  const readyAssets = state.assets.filter((asset) => asset.type === 'variant' && asset.status === 'approved' && !reservedAssetIds.has(asset.id))
   const todaySlots = state.slots.filter((slot) => slot.date === today)
   const pendingPosts = todaySlots.filter((slot) => slot.status === 'ready')
   const creatorCounts = useMemo(() => state.creators.map((creator) => ({
